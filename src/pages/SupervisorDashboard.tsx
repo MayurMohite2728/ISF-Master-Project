@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useI18n } from "@/contexts/I18nContext";
 import { FileText, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import  ApprovalsInbox from '../pages/ApprovalsInbox';
 
 export default function CommanderDashboard() {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ export default function CommanderDashboard() {
       {/* Second Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Card: Active Card Info */}
-        <Card className="rounded-2xl border shadow-sm p-6 text-primary-foreground bg-gradient-to-br from-primary/80 to-primary/90"
+        {/* <Card className="rounded-2xl border shadow-sm p-6 text-primary-foreground bg-gradient-to-br from-primary/80 to-primary/90"
   style={{
     backgroundImage: "url('/approvalimage.png')",
     backgroundSize: "cover",
@@ -110,16 +111,16 @@ export default function CommanderDashboard() {
           </div>
 
           {/* BUTTON GOES TO APPROVALS WITH FILTER */}
-          <Button
+          {/* <Button
             onClick={() => navigate(`/commander/approvals?status=${activeCard === "total" ? "all" : activeCard}`)}
             className="w-full bg-charcoal text-primary-foreground hover:bg-charcoal/90 font-montserrat text-lg font-semibold"
           >
             {t("commander.dashboard.reviewApprovals")}
-          </Button>
-        </Card>
+          </Button> */}
+        {/* </Card> */} 
 
         {/* Right Card: Recent Decisions */}
-        <Card className="p-6 h-full">
+        {/* <Card className="p-6 h-full">
           <h3 className="font-montserrat font-semibold text-xl mb-6">{t("supervisor.dashboard.recentactivity")}</h3>
           <div className="space-y-4">
             <div className="flex items-start gap-4 pb-4 border-b">
@@ -165,8 +166,11 @@ export default function CommanderDashboard() {
               </div>
             </div>
           </div>
-        </Card>
+        </Card> */}
+         
+
       </div>
+      <ApprovalsInbox/>
     </div>
   );
 }

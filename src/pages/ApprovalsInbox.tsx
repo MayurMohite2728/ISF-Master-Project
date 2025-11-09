@@ -106,9 +106,9 @@ export default function ApprovalsInbox() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <Button variant="ghost" onClick={() => navigate("/commander/dashboard")} className="mb-4">
+      {/* <Button variant="ghost" onClick={() => navigate("/commander/dashboard")} className="mb-4">
         {t("approvalsInbox.backToDashboard")}
-      </Button>
+      </Button> */}
 
       <div className="mb-6">
         <h2 className="font-montserrat font-bold text-2xl text-charcoal mb-2">
