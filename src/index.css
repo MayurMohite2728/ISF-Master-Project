@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* ISF Qatar Maroon - Primary Authority Color */
+    --background: 0 0% 95%;
+    --foreground: 0 0% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 11%;
+
+    /* Qatar Maroon - #8A1538 */
+    --primary: 342 79.02% 28.04%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Sand Neutral - #EDE7E2 */
+    --secondary: 30 12% 91%;
+    --secondary-foreground: 0 0% 11%;
+
+    --muted: 30 12% 91%;
+    --muted-foreground: 0 0% 45%;
+
+    /* Command Gold - #C6A667 */
+    --accent: 44.48 73.33% 61.76%;
+    --accent-foreground: 0 0% 11%;
+
+    /* Error Red - #C0392B */
+    --destructive: 6 63% 46%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Success Green - #3BA55D */
+    --success: 142 47% 44%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning Gold - #F2C450 */
+    --warning: 45 87% 63%;
+    --warning-foreground: 0 0% 11%;
+
+    /* Command Charcoal - #1D1D1D */
+    --charcoal: 0 0% 11%;
+
+    --border: 30 12% 85%;
+    --input: 30 12% 85%;
+    --ring: 346 74% 31%;
+
+    /* Sidebar colors */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 11%;
+    --sidebar-border: 30 12% 85%;
+
+    --radius: 0.25rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* RTL Support for Arabic */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+/* RTL text alignment */
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+/* RTL margins */
+[dir="rtl"] .ml-\[30px\] {
+  margin-left: 0;
+  margin-right: 30px;
+}
+
+[dir="rtl"] .mr-\[30px\] {
+  margin-right: 0;
+  margin-left: 30px;
+}
+
+/* RTL padding */
+[dir="rtl"] .pl-8 {
+  padding-left: 0;
+  padding-right: 2rem;
+}
+
+[dir="rtl"] .pr-8 {
+  padding-right: 0;
+  padding-left: 2rem;
+}
+
+/* RTL font family for Arabic */
+[dir="rtl"] body {
+  font-family: 'Tajawal', 'Open Sans', sans-serif;
+}
+
+[dir="rtl"] .font-open-sans {
+  font-family: 'Tajawal', 'Open Sans', sans-serif;
+}
+
+/* RTL borders - swap left to right */
+[dir="rtl"] .border-l-4 {
+  border-left-width: 0;
+  border-right-width: 4px;
+}
+
+[dir="rtl"] .border-l-2 {
+  border-left-width: 0;
+  border-right-width: 2px;
+}
+
+[dir="rtl"] .border-r-4 {
+  border-right-width: 0;
+  border-left-width: 4px;
+}
+
+[dir="rtl"] .border-r-2 {
+  border-right-width: 0;
+  border-left-width: 2px;
+}
+
+/* RTL icon margins in dropdown menus and buttons */
+[dir="rtl"] .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .mr-4 {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir="rtl"] .ml-4 {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+/* RTL gap handling */
+[dir="rtl"] .gap-4 {
+  /* gap works correctly in RTL, no change needed */
+}
+
+[dir="rtl"] .gap-3 {
+  /* gap works correctly in RTL, no change needed */
+}
+
+/* RTL justify-between - keep as is, works correctly */
+[dir="rtl"] .justify-between {
+  justify-content: space-between;
+}
+
+/* RTL items-start - keep as is */
+[dir="rtl"] .items-start {
+  align-items: flex-start;
+}
+
+/* RTL flex row reverse - only when explicitly needed */
+[dir="rtl"] .flex-row-reverse {
+  flex-direction: row-reverse;
+}
+/*Added Newly */
+
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}

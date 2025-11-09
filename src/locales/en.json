@@ -1,0 +1,340 @@
+{
+  "common": {
+    "appName": "ISF Digital Services",
+    "appSubtitle": "Qatar Internal Security Forces",
+    "back": "Back",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "signIn": "Sign In",
+    "loginAs": "Login As",
+    "officer": "Officer",
+    "commander": "Commander",
+    "username": "Username",
+    "password": "Password",
+    "enterUsername": "Enter your username",
+    "enterPassword": "Enter your password",
+    "loggedInAs": "Logged in as",
+    "request": "Request",
+    "review": "Review",
+    "approve": "Approve",
+    "reject": "Reject",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "status": "Status",
+    "priority": "Priority",
+    "high": "High",
+    "standard": "Standard",
+    "language": "EN | AR",
+    
+    "footer": {
+      "copyright": "© 2025 Qatar Internal Security Forces. All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "contactSupport": "Contact Support",
+      "version": "Version 1.0.0",
+      "links": "Links",
+      "support": "Support",
+      "builtWith": "Built with",
+      "inQatar": "in Qatar"
+    },
+    "logout": "Logout",
+    "switchUser": "Switch User",
+    "userMenu": "User Menu",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "markAllAsRead": "Mark all as read",
+    "new": "New",
+    "help": "Help & Support",
+    "helpDescription": "Get assistance with using the ISF Digital Services platform.",
+    "needSupport": "Need Support?",
+    "contactSupportMessage": "If you need assistance or have questions, please contact our support team:",
+    "supportContact": "IT Support: ext. 5000 | Email: support@isf.gov.qa",
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
+    "faqMessage": "For answers to common questions, please visit the internal knowledge base or contact your system administrator."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "serviceCatalog": "Service Catalog",
+    "requestPhone": "Request Phone",
+    "requestStatus": "Request Status",
+    "approvals": "Approvals",
+    "supervisordashboard" : "Supervisor Dashboard",
+    "teamapprovals" : "Team Approvals"
+  },
+  "login": {
+    "title": "ISF Digital Services",
+    "subtitle": "Qatar Internal Security Forces",
+    "agreeToTerms": "By continuing, you agree to our",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "officer": {
+    "dashboard": {
+      "title": "My Requests Dashboard",
+      "subtitle": "Internal Security Division – Field Ops",
+      "totalRequests": "Total Requests",
+      "inProgress": "In Progress",
+      "awaitingApproval": "Awaiting Approval",
+      "completedThisWeek": "Completed This Week",
+      "slaBreaches": "SLA Breaches",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "recentActivity": "Recent Activity",
+      "requestNewService": "Request New Service",
+      "requestNewServiceDesc": "Access the service catalog to submit a new request for equipment, access, or support.",
+      "openServiceCatalog": "Open Service Catalog",
+      "backToDashboard": "← Back to Dashboard",
+      "myRequestsDashboard": "My Requests Dashboard"
+    },
+    "name": "Nandini",
+    "badgeNumber": "ISF-064821",
+    "unit": "Internal Security Division – Field Ops",
+    "location": "Doha HQ – Building 3, Room 214"
+  },
+  "supervisor": {
+    "dashboard": {
+      "title": "Supervisor Approval Dashboard",
+      "subtitle": "Review and approve team requests - Monitor departmental activities",
+      "pendingReviews": "Pending Reviews",
+      "teamRequests": "Team Requests",
+      "approvedThisWeek": "Approved This Week",
+      "escalated": "Escalated",
+      "recentactivity": "Recent Activity",
+      "reviewApprovals": "Review All Approvals",
+      "backToDashboard": "← Back to Dashboard",
+      "approvalreview" :"Approval Review"
+    },
+    "name": "Inthihas"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Service Desk Control Panel",
+      "subtitle": "Manage all requests, assignments, and SLA monitoring",
+      "totalActiveRequests": "Total Active Requests",
+      "unassigned": "Unassigned",
+      "completedToday": "Completed Today",
+      "slaBreaches": "SLA Breaches",
+      "activeTechnicians": "Active Technicians",
+      "avgResponseTime": "Avg Response Time",
+      "escalated": "Escalated",
+      "recentActivity": "Recent Activity",
+      "backToDashboard": "← Back to Dashboard"
+    },
+    "name": "Jasmine"
+  },
+  "techApprover": {
+    "dashboard": {
+      "title": "Technical Approvals Dashboard",
+      "subtitle": "Technical validation and action center - Network & infrastructure requests",
+      "pendingTechnicalReview": "Pending Technical Review",
+      "inProgress": "In Progress",
+      "completedToday": "Completed Today",
+      "requiresAttention": "Requires Attention",
+      "networkAccess": "Network Access",
+      "serverAccess": "Server Access",
+      "storage": "Storage",
+      "security": "Security",
+      "backToDashboard": "← Back to Dashboard"
+    },
+    "name": "Rashaad"
+  },
+  "commander": {
+    "dashboard": {
+      "title": "Commander Dashboard",
+      "subtitle": "Command Overview & Approval Management",
+      "pendingApprovals": "Pending Approvals",
+      "totalRequests": "Total Requests",
+      "approvedToday": "Approved",
+      "rejected": "Rejected",
+      "recentDecisions": "Recent Decisions",
+      "reviewApprovals": "Review Approvals",
+      "requiresAttention": "Requires immediate attention.",
+      "backToDashboard": "← Back to Dashboard"   
+
+    },
+    "name": "Capt. Khalid Al-Marri"
+  },
+  "serviceCatalog": {
+    "title": "Service Catalog",
+    "subtitle": "Select a service to submit a new request.",
+    "backToDashboard": "← Back to Dashboard",
+    "desktopPhone": {
+      "title": "Desktop Phone Provisioning",
+      "description": "Request a secure VoIP desk phone for operational duty."
+    },
+    "laptop": {
+      "title": "Laptop Provisioning",
+      "description": "Request standard or specialized laptop equipment"
+    },
+    "networkAccess": {
+      "title": "Network Access Request",
+      "description": "Request access to secure network resources"
+    },
+    "securityClearance": {
+      "title": "Security Clearance Update",
+      "description": "Request clearance level modification"
+    },
+    "storage": {
+      "title": "Storage Allocation",
+      "description": "Request additional storage capacity"
+    },
+    "monitor": {
+      "title": "Monitor Request",
+      "description": "Request additional display equipment"
+    },
+    "comingSoon": "Coming Soon"
+  },
+  "phoneRequest": {
+    "title": "Desktop Phone Provisioning Request",
+    "subtitle": "Complete the form below to request a VoIP desk phone.",
+    "backToCatalog": "← Back to Catalog",
+    "requestorName": "Requestor Name",
+    "badgeNumber": "Badge Number",
+    "unit": "Unit",
+    "location": "Location",
+    "phoneModel": "Phone Model",
+    "phoneModelRequired": "Phone Model *",
+    "selectPhoneModel": "Select phone model",
+    "workstation": "Workstation Location",
+    "workstationRequired": "Workstation Location *",
+    "workstationPlaceholder": "e.g., Building 3, Room 214, Desk 8",
+    "justification": "Justification",
+    "justificationPlaceholder": "Provide a brief justification for this request",
+    "submitRequest": "Submit Request"
+  },
+  "requestSubmitted": {
+    "title": "Request Submitted",
+    "message": "Awaiting Commander Approval.",
+    "requestId": "Request ID",
+    "serviceType": "Service Type",
+    "requestor": "Requestor",
+    "pendingApproval": "Pending Approval",
+    "returnToDashboard": "Return to Dashboard",
+    "trackStatus": "Track Status"
+  },
+  "requestStatus": {
+    "title": "Request Status Tracker",
+    "subtitle": "Real-time status of your service request.",
+    "backToDashboard": "← Back to Dashboard",
+    "requestId": "Request ID",
+    "currentStatus": "Current Status",
+    "inProgress": "In Progress",
+    "serviceType": "Service Type",
+    "requestDetails": "Request Details",
+    "requestor": "Requestor",
+    "unit": "Unit",
+    "phoneModel": "Phone Model",
+    "location": "Location",
+    "submittedDate": "Submitted Date",
+    "action": "Action",
+    "view": "View",
+    "viewRequestDetails": "View detailed information about this request",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusCompleted": "Completed",
+    "statusRejected": "Rejected",
+    "justification": "Justification",
+    "noRequests": "No requests found",
+    "noResults": "No results found",
+    "searchPlaceholder": "Search by request ID, service, status, date...",
+    "showing": "Showing",
+    "of": "of",
+    "statusSteps": {
+      "commanderApproval": "Commander Approval",
+      "itsmTicketCreated": "ITSM Ticket Created",
+      "warehouseAllocation": "Warehouse Allocation",
+      "voipProvisioning": "VoIP Provisioning"
+    }
+  },
+  "approvalsInbox": {
+    "title": "Approvals Inbox",
+    "subtitle": "Review and action pending service requests.",
+    "backToDashboard": "← Back to Dashboard",
+    "requestId": "Request ID",
+    "requestor": "Requestor",
+    "unit": "Unit",
+    "service": "Service",
+    "priority": "Priority",
+    "submitted": "Submitted",
+    "action": "Action",
+    "today": "Today",
+    "noApprovals": "No approvals found",
+    "noResults": "No results found",
+    "searchPlaceholder": "Search by request ID, requestor, unit, service...",
+    "showing": "Showing",
+    "of": "of"
+  },
+  "approvalDetail": {
+    "title": "Approval Request Review",
+    "subtitle": "Review request details and make a decision.",
+    "backToInbox": "← Back to Inbox",
+    "requestId": "Request ID",
+    "serviceType": "Service Type",
+    "requestorInformation": "Requestor Information",
+    "name": "Name",
+    "badgeNumber": "Badge Number",
+    "unit": "Unit",
+    "location": "Location",
+    "requestDetails": "Request Details",
+    "phoneModel": "Phone Model",
+    "workstationLocation": "Workstation Location",
+    "justification": "Justification",
+    "rejectRequest": "Reject Request",
+    "approveRequest": "Approve Request",
+    "rejectionJustification": "Rejection Justification Required",
+    "rejectionReason": "Reason for Rejection *",
+    "rejectionPlaceholder": "Provide a detailed justification for rejecting this request",
+    "confirmRejection": "Confirm Rejection"
+  },
+  "statusApproved": {
+    "title": "Provisioning Completed — Asset Assigned",
+    "message": "Your desktop phone has been provisioned and is ready for use.",
+    "backToDashboard": "← Back to Dashboard",
+    "provisioningTimeline": "Provisioning Timeline",
+    "timelineSubtitle": "Complete history of your request.",
+    "voipExtension": "VoIP Extension",
+    "phoneModel": "Phone Model",
+    "nextSteps": "Next Steps",
+    "step1": "Your phone has been delivered to your workstation location.",
+    "step2": "Connect the phone to your network port and power source.",
+    "step3": "Contact IT Support at ext. 5000 if you encounter any configuration issues.",
+    "returnToDashboard": "Return to Dashboard"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "activities": {
+    "desktopPhoneApproved": "Desktop Phone Approved",
+    "extensionAssigned": "Extension assigned",
+    "requestApprovedByCommander": "Request REQ-00841 Approved by Commander",
+    "approvedByCommander": "Approved by Commander",
+    "voipExtensionProvisioned": "VoIP Extension Provisioned: EXT-44129",
+    "extensionProvisioned": "Extension provisioned",
+    "laptopRequestInReview": "Laptop Request - In Review",
+    "awaitingApproval": "Awaiting approval",
+    "networkAccessGranted": "Network Access Granted",
+    "accessConfigured": "Access configured",
+    "desktopPhoneApprovedCommander": "Desktop Phone - Approved",
+    "networkAccessApproved": "Network Access - Approved",
+    "laptopRequestRejected": "Laptop Request - Rejected",
+    "daysAgo": "{{count}} days ago",
+    "daysAgoOne": "1 day ago",
+    "weekAgo": "1 week ago",
+    "minutesAgo": "{{count}} minutes ago",
+    "minutesAgoOne": "1 minute ago",
+    "hourAgo": "{{count}} hours ago",
+    "hourAgoOne": "1 hour ago"
+  },
+  "demoUsers": {
+    "officer": "• {{name}} / {{password}} (Officer)",
+    "supervisor": "• {{name}} / {{password}} (Supervisor)",
+    "admin": "• {{name}} / {{password}} (Admin)",
+    "tech": "• {{name}} / {{password}} (Tech Approver)"
+  }
+}
+
