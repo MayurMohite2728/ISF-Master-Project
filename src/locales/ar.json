@@ -57,7 +57,11 @@
     "serviceCatalog": "كتالوج الخدمات",
     "requestPhone": "طلب هاتف",
     "requestStatus": "حالة الطلب",
-    "approvals": "الموافقات"
+    "approvals": "الموافقات",
+    "supervisordashboard" : "لوحة تحكم المشرف",
+    "teamapprovals" : "موافقات الفريق",
+     "techdashboard" : "لوحة التحكم الفنية",
+    "techapprovals" : "الموافقات الفنية"
   },
   "login": {
     "title": "الخدمات الرقمية للأمن الداخلي",
@@ -95,6 +99,7 @@
     "dashboard": {
       "title": "لوحة موافقات المشرف",
       "subtitle": "مراجعة واعتماد طلبات الفريق – متابعة أنشطة القسم",
+       "subtext":"مراجعة الموافقات تضمن التحقق من دقة واكتمال كل طلب. تساعد المراجعات في الوقت المناسب على الحفاظ على سير العمل بسلاسة ومنع التأخيرات. ومن خلال اعتماد العناصر المناسبة، تساهم في إبقاء المشاريع والعمليات على المسار الصحيح.",
       "pendingReviews": "Pending Reviews",
       "teamRequests": "Team Requests",
       "approvedThisWeek": "Approved This Week",
@@ -106,7 +111,39 @@
        "supervisordashboard" : "لوحة المشرف",
        "teamapprovals" : "موافقات الفريق"
     },
-    "name": "Inthihas"
+    "name": "إنتحاس"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "لوحة تحكم مكتب الخدمة",
+      "subtitle": "إدارة جميع الطلبات والتكليفات ومراقبة اتفاقيات مستوى الخدمة (SLA)",
+      "totalActiveRequests": "إجمالي الطلبات النشطة",
+     
+      "completedToday": "Completed ",
+      "slaBreaches": "SLA Breaches",
+      "activeTechnicians": "Active Technicians",
+      "avgResponseTime": "Avg Response Time",
+      "escalated": "Escalated",
+      "recentActivity": "Recent Activity",
+      "backToDashboard": "← Back to Dashboard"
+    },
+    "name": "ياسمين"
+  },
+  "techApprover": {
+    "dashboard": {
+      "title": "لوحة الموافقات الفنية",
+      "subtitle": "مركز التحقق الفني والإجراءات - طلبات الشبكة والبنية التحتية",
+      "pendingTechnicalReview": "Pending Technical Review",
+      "inProgress": "In Progress",
+      "completedToday": "Completed Today",
+      "requiresAttention": "Requires Attention",
+      "networkAccess": "Network Access",
+      "serverAccess": "Server Access",
+      "storage": "Storage",
+      "security": "Security",
+      "backToDashboard": "← Back to Dashboard"
+    },
+    "name": "رشاد"
   },
   "commander": {
     "dashboard": {

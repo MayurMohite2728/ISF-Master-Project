@@ -53,10 +53,10 @@ export default function CommanderDashboard() {
     <div className="container mx-auto px-6 py-8">
       <div className="mb-8">
         <h2 className="font-montserrat font-bold text-3xl text-primary mb-2">
-          Service Desk Control Panel
+        {t("admin.dashboard.title")}
         </h2>
         <p className="text-muted-foreground font-open-sans">
-          Manage all requests, assignments, and SLA monitoring
+           {t("admin.dashboard.subtitle")}
         </p>
       </div>
 
@@ -110,9 +110,9 @@ export default function CommanderDashboard() {
           </div>
 
           {/* BUTTON GOES TO APPROVALS WITH FILTER */}
-          <Button
+           <Button
             onClick={() => navigate(`/commander/approvals?status=${activeCard === "total" ? "all" : activeCard}`)}
-            className="w-full bg-charcoal text-primary-foreground hover:bg-charcoal/90 font-montserrat text-lg font-semibold"
+            className="w-full bg-accent text-foreground hover:bg-accent/90 font-montserrat text-lg font-semibold"
           >
             {t("commander.dashboard.reviewApprovals")}
           </Button>
@@ -120,7 +120,7 @@ export default function CommanderDashboard() {
 
         {/* Right Card: Recent Decisions */}
         <Card className="p-6 h-full">
-          <h3 className="font-montserrat font-semibold text-xl mb-6">{t("commander.dashboard.recentDecisions")}</h3>
+          <h3 className="font-montserrat font-semibold text-xl mb-6">{t("admin.dashboard.recentActivity")}</h3>
           <div className="space-y-4">
             <div className="flex items-start gap-4 pb-4 border-b">
               <div className="w-2 h-2 rounded-full bg-success mt-2" />

@@ -60,7 +60,9 @@
     "requestStatus": "My Request",
     "approvals": "Approvals",
     "supervisordashboard" : "Supervisor Dashboard",
-    "teamapprovals" : "Team Approvals"
+    "teamapprovals" : "Team Approvals",
+    "techdashboard" : "Technical Dashboard",
+    "techapprovals" : "Technical Approvals"
   },
   "login": {
     "title": "ISF Digital Services",
@@ -98,6 +100,7 @@
     "dashboard": {
       "title": "Supervisor Approval Dashboard",
       "subtitle": "Review and approve team requests - Monitor departmental activities",
+       "subtext":"Approvals Review ensures every request is checked for accuracy and completeness. Timely reviews help maintain smooth workflows and prevent delays. By approving the right items, you keep projects and operations on track. into arabic",
       "pendingReviews": "Pending Reviews",
       "teamRequests": "Team Requests",
       "approvedThisWeek": "Approved This Week",
@@ -111,7 +114,7 @@
   },
   "admin": {
     "dashboard": {
-      "title": "Service Desk Control Panel",
+      "title": "Service Desk Dashboard",
       "subtitle": "Manage all requests, assignments, and SLA monitoring",
       "totalActiveRequests": "Total Active Requests",
       "unassigned": "Unassigned",

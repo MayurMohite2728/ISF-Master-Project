@@ -104,7 +104,7 @@ export const NavigationSidebar = ({ children }: NavigationSidebarProps) => {
   // Supervisor navigation items
   const supervisorNavItems = [
     {
-      title: "Supervisor Dashboard",
+      title: t("sidebar.supervisordashboard"),
       icon: LayoutDashboard,
       path: "/supervisor/dashboard",
     },
@@ -119,7 +119,7 @@ export const NavigationSidebar = ({ children }: NavigationSidebarProps) => {
       path: "/request/status",
     },
     {
-      title: "Team Approvals",
+      title:  t("sidebar.teamapprovals"),
       icon: CheckSquare,
       path: "/supervisor/approvals",
     },
@@ -144,12 +144,12 @@ export const NavigationSidebar = ({ children }: NavigationSidebarProps) => {
   // Technical Approver navigation items
   const techApproverNavItems = [
     {
-      title: "Technical Dashboard",
+      title: t("sidebar.techdashboard"),
       icon: LayoutDashboard,
       path: "/tech-approver/dashboard",
     },
     {
-      title: "Technical Reviews",
+      title: t("sidebar.techapprovals"),
       icon: CheckSquare,
       path: "/tech-approver/reviews",
     },
