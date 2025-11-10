@@ -8,6 +8,21 @@ export default function OfficerDashboard() {
   const navigate = useNavigate();
   const { t } = useI18n();
 
+
+const requests = JSON.parse(localStorage.getItem('requests')) || [];
+
+const approvedCount = requests.filter((req) =>
+  req.current_status?.toLowerCase() == 'approved' || req.status ?.toLowerCase() === "approved"
+).length;
+
+
+ const pendingCount = requests.filter((req) =>
+  req.current_status?.toLowerCase() == 'Completed' || req.status ?.toLowerCase() === "Completed"
+).length;
+
+
+const getCount = requests.length;
+
   return (
     <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
@@ -24,7 +39,7 @@ export default function OfficerDashboard() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-foreground font-open-sans mb-1">{t("officer.dashboard.inProgress")}</p>
-                <p className="text-3xl font-montserrat font-bold text-charcoal">14</p>
+                <p className="text-3xl font-montserrat font-bold text-charcoal">{getCount}</p>
               </div>
               <Phone className="w-8 h-8 text-primary" />
             </div>
@@ -34,7 +49,7 @@ export default function OfficerDashboard() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-foreground font-open-sans mb-1">{t("officer.dashboard.awaitingApproval")}</p>
-                <p className="text-3xl font-montserrat font-bold text-charcoal">3</p>
+                <p className="text-3xl font-montserrat font-bold text-charcoal">{approvedCount}</p>
               </div>
               <Clock className="w-8 h-8 text-warning" />
             </div>
@@ -44,7 +59,7 @@ export default function OfficerDashboard() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-foreground font-open-sans mb-1">{t("officer.dashboard.completedThisWeek")}</p>
-                <p className="text-3xl font-montserrat font-bold text-charcoal">47</p>
+                <p className="text-3xl font-montserrat font-bold text-charcoal">{pendingCount}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-success" />
             </div>

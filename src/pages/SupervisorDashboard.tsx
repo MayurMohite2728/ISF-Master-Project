@@ -22,6 +22,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { FileText, Clock, CheckCircle, AlertCircle, Search } from "lucide-react";
+import  ApprovalsInbox from '../pages/ApprovalsInbox';
 
 export default function SupervisorDashboard() {
   const navigate = useNavigate();
@@ -168,137 +169,90 @@ export default function SupervisorDashboard() {
         })}
       </div>
 
-      {/* ---- APPROVAL INBOX TABLE SECTION ---- */}
-      <Card className="p-6">
-               {/* Search */}
-        <div className="mb-4 flex justify-between">
-           <h3 className="font-montserrat font-semibold text-xl mb-4">
-          {t("approvalsInbox.title")}
-        </h3>
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder={t("approvalsInbox.searchPlaceholder")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+      {/* Second Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Card: Active Card Info */}
+        {/* <Card className="rounded-2xl border shadow-sm p-6 text-primary-foreground bg-gradient-to-br from-primary/80 to-primary/90"
+  style={{
+    backgroundImage: "url('/approvalimage.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}>
+          <div className="flex items-start justify-between mb-4">
+            <div>
+           <h3 className="font-montserrat font-semibold text-xl mb-2">Approvals Review</h3>
+              <p className="font-open-sans text-foreground-primary mb-4">
+              Approvals Review ensures every request is checked for accuracy and completeness. Timely reviews help maintain smooth workflows and prevent delays. By approving the right items, you keep projects and operations on track.
+              </p> 
+            </div>
+            <div className="mb-8 w-12 h-12 bg-charcoal/10 rounded-full flex items-center justify-center">
+            
+            </div>
           </div>
         </div>
 
-        {/* Table */}
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("approvalsInbox.requestId")}</TableHead>
-              <TableHead>{t("approvalsInbox.requestor")}</TableHead>
-              <TableHead>{t("approvalsInbox.unit")}</TableHead>
-              <TableHead>{t("approvalsInbox.service")}</TableHead>
-              <TableHead>{t("approvalsInbox.priority")}</TableHead>
-              <TableHead>{t("approvalsInbox.submitted")}</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>{t("approvalsInbox.action")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedApprovals.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={8}
-                  className="text-center py-8 text-charcol"
-                >
-                  {searchQuery
-                    ? t("approvalsInbox.noResults")
-                    : t("approvalsInbox.noApprovals")}
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedApprovals.map((a) => (
-                <TableRow key={a.id}>
-                  <TableCell className="text-primary font-semibold">
-                    {a.id}
-                  </TableCell>
-                  <TableCell>{a.requestor}</TableCell>
-                  <TableCell>{a.unit}</TableCell>
-                  <TableCell>{a.service}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={a.priority === "High" ? "destructive" : "secondary"}
-                    >
-                      {a.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{a.submitted}</TableCell>
-                  <TableCell>{getStatusBadge(a.status)}</TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      onClick={() => navigate("/commander/approval-detail")}
-                    >
-                      {t("common.review")}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+          {/* BUTTON GOES TO APPROVALS WITH FILTER */}
+          {/* <Button
+            onClick={() => navigate(`/commander/approvals?status=${activeCard === "total" ? "all" : activeCard}`)}
+            className="w-full bg-charcoal text-primary-foreground hover:bg-charcoal/90 font-montserrat text-lg font-semibold"
+          >
+            {t("commander.dashboard.reviewApprovals")}
+          </Button> */}
+        {/* </Card> */} 
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-end">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage((p) => Math.max(1, p - 1));
-                    }}
-                    className={
-                      currentPage === 1
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                  />
-                </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setCurrentPage(page);
-                        }}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage((p) => Math.min(totalPages, p + 1));
-                    }}
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+        {/* Right Card: Recent Decisions */}
+        {/* <Card className="p-6 h-full">
+          <h3 className="font-montserrat font-semibold text-xl mb-6">{t("supervisor.dashboard.recentactivity")}</h3>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4 pb-4 border-b">
+              <div className="w-2 h-2 rounded-full bg-success mt-2" />
+              <div className="flex-1">
+                <p className="font-montserrat font-semibold text-charcoal">
+                  {t("activities.desktopPhoneApprovedCommander")}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t("officer.name")} - REQ-2025-001247
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  15 {t("activities.minutesAgo").replace("{{count}}", "15")}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 pb-4 border-b">
+              <div className="w-2 h-2 rounded-full bg-success mt-2" />
+              <div className="flex-1">
+                <p className="font-montserrat font-semibold text-charcoal">
+                  {t("activities.networkAccessApproved")}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                 User Name2 - REQ-2025-001246
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">{t("activities.hourAgoOne")}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-2 h-2 rounded-full bg-destructive mt-2" />
+              <div className="flex-1">
+                <p className="font-montserrat font-semibold text-charcoal">
+                  {t("activities.laptopRequestRejected")}
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  User Name3 - REQ-2025-001245
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  2 {t("activities.hourAgo").replace("{{count}}", "2")}
+                </p>
+              </div>
+            </div>
           </div>
-        )}
-      </Card>
+        </Card> */}
+         
+
+      </div>
+      <ApprovalsInbox/>
     </div>
   );
 }
