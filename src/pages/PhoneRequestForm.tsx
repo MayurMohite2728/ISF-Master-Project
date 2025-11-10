@@ -99,7 +99,30 @@ export default function PhoneRequestForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(processBody),
-      });
+      });  
+
+
+                 // ✅ 3️⃣ Append Request Info to localStorage
+    const newRequest = {
+      id: Date.now().toString(),
+      requestor_name: getUserName(),
+      current_status: "SUBMITTED",
+      badge_number: getUserBadge(),
+      submitted_date: new Date().toISOString(),
+      phone_model: phoneModel,
+      workstation,
+      justification,
+    };
+
+    const existingRequests = JSON.parse(localStorage.getItem("requests")) || [];
+    existingRequests.push(newRequest);
+    localStorage.setItem("requests", JSON.stringify(existingRequests));
+     
+    
+     
+
+
+    console.log("📦 Request saved to localStorage:", newRequest);
 
       if (!processResponse.ok) {
         throw new Error(`Process start failed: ${processResponse.status}`);
@@ -107,6 +130,17 @@ export default function PhoneRequestForm() {
 
       const processResult = await processResponse.json();
       console.log("✅ Process started successfully:", processResult);
+
+
+      // append the values in localstorage 
+     
+
+
+
+
+
+
+
 
       // ✅ Navigate on success
       navigate("/request/submitted", { state: { processResult } });

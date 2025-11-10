@@ -57,6 +57,8 @@ export default function ApprovalsInbox() {
   const filteredApprovals = useMemo(() => {
     let approvals = pendingApprovals;
 
+    
+
     // Filter by status
     if (statusFilter !== "all") {
       const statusCapitalized = statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
@@ -106,9 +108,9 @@ export default function ApprovalsInbox() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <Button variant="ghost" onClick={() => navigate("/commander/dashboard")} className="mb-4">
+      {/* <Button variant="ghost" onClick={() => navigate("/commander/dashboard")} className="mb-4">
         {t("approvalsInbox.backToDashboard")}
-      </Button>
+      </Button> */}
 
       <div className="mb-6">
         <h2 className="font-montserrat font-bold text-2xl text-charcoal mb-2">
