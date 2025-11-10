@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/contexts/I18nContext";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Play } from "lucide-react";
 
 export default function ApprovalDetail() {
   const navigate = useNavigate();
@@ -116,6 +116,14 @@ export default function ApprovalDetail() {
 
         {!showRejection ? (
           <div className="flex gap-4">
+              <Button
+              variant="outline"
+              onClick={() => setShowRejection(true)}
+              className="flex-1 font-montserrat bg-primary  text-primary-foreground hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              {t("approvalDetail.initiateRequest")}
+            </Button>
             <Button
               variant="outline"
               onClick={() => setShowRejection(true)}

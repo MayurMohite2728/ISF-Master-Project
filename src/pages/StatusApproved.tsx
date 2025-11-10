@@ -98,7 +98,7 @@ export default function StatusApproved() {
           </p>
         </div>
 
-        <StatusTracker steps={steps} />
+        <StatusTracker steps={steps} overallStatus="approved" />
 
         <Card className="p-6 mt-6">
           <h3 className="font-montserrat font-semibold text-lg mb-4">{t("statusApproved.nextSteps")}</h3>
