@@ -57,6 +57,8 @@ export default function ApprovalsInbox() {
   const filteredApprovals = useMemo(() => {
     let approvals = pendingApprovals;
 
+    
+
     // Filter by status
     if (statusFilter !== "all") {
       const statusCapitalized = statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);

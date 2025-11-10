@@ -117,6 +117,10 @@ export default function PhoneRequestForm() {
     const existingRequests = JSON.parse(localStorage.getItem("requests")) || [];
     existingRequests.push(newRequest);
     localStorage.setItem("requests", JSON.stringify(existingRequests));
+     
+    
+     
+
 
     console.log("📦 Request saved to localStorage:", newRequest);
 
