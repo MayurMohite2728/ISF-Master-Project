@@ -27,7 +27,7 @@ export default function ApprovalDetail() {
     <div className="container mx-auto px-6 py-8 max-w-4xl">
         <Button
           variant="ghost"
-          onClick={() => navigate("/commander/approvals")}
+          onClick={() => navigate("/tech-approver/dashboard")}
           className="mb-4"
         >
           {t("approvalDetail.backToInbox")}
@@ -122,7 +122,7 @@ export default function ApprovalDetail() {
               className="flex-1 font-montserrat bg-primary  text-primary-foreground hover:bg-destructive hover:text-destructive-foreground"
             >
               <Play className="w-4 h-4 mr-2" />
-              {t("approvalDetail.initiateRequest")}
+              {t("approvalDetail.initiatesubrequest")}
             </Button>
             <Button
               variant="outline"
