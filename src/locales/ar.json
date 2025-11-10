@@ -290,7 +290,8 @@
     "rejectionJustification": "مطلوب مبرر الرفض",
     "rejectionReason": "سبب الرفض *",
     "rejectionPlaceholder": "قدم مبرراً مفصلاً لرفض هذا الطلب",
-    "confirmRejection": "تأكيد الرفض"
+    "confirmRejection": "تأكيد الرفض",
+     "initiatesubrequest": "بدء طلب فرعي"
   },
   "statusApproved": {
     "title": "اكتمل التوفير — تم تعيين الأصل",
