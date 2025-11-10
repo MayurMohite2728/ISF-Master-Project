@@ -290,7 +290,8 @@
     "rejectionJustification": "Rejection Justification Required",
     "rejectionReason": "Reason for Rejection *",
     "rejectionPlaceholder": "Provide a detailed justification for rejecting this request",
-    "confirmRejection": "Confirm Rejection"
+    "confirmRejection": "Confirm Rejection",
+    "initiateRequest" :"Initiate Request"
   },
   "statusApproved": {
     "title": "Provisioning Completed — Asset Assigned",

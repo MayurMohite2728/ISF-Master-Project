@@ -55,9 +55,25 @@ export default function ApprovalsInbox() {
 
   // Filtered approvals by status and search query
   const filteredApprovals = useMemo(() => {
-    let approvals = pendingApprovals;
 
+    const stored = JSON.parse(localStorage.getItem("requests")) || [];
     
+     const localApprovals = stored.map((req) => ({
+    id: req.id || `REQ-${Date.now()}`,
+    requestor: req.requestor_name || "Unknown",
+    unit: req.unit || "N/A",
+    service: req.phone_model || req.serviceType || "Hardware Request",
+    priority: req.priority || "Standard",
+    submitted: new Date(req.submitted_date || Date.now()).toLocaleString("en-US"),
+    status:
+       req.current_status?.charAt(0).toUpperCase() +
+        req.current_status?.slice(1).toLowerCase() || "Pending",
+  }));
+
+  
+    let approvals = [...localApprovals,...pendingApprovals];
+
+
 
     // Filter by status
     if (statusFilter !== "all") {
