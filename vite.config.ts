@@ -26,15 +26,14 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "0.0.0.0",
-    port: 8080,
-
+    port: 8085,
     // ✅ Added Proxy
     proxy: {
       "/camunda": {
         target:
-          "https://syd-1.zeebe.camunda.io:443/ccd13e6e-9365-4c0a-a69f-de46ff8ff4b0",
+          "http://localhost:8088/",
         changeOrigin: true,
-        secure: true, // keep true since it's HTTPS
+        secure: false, // keep true since it's HTTPS
         rewrite: (path) => path.replace(/^\/camunda/, ""),
       },
     },

@@ -23,111 +23,177 @@ import {
 } from "@/components/ui/pagination";
 import { Search } from "lucide-react";
 
-const pendingApprovals = [
-  { id: "REQ-2025-001247", requestor: "User Name1", unit: "Field Ops", service: "Desktop Phone", priority: "Standard", submitted: "Today, 14:58", status: "Pending" },
-  { id: "REQ-2025-001248", requestor: "User Name2", unit: "Intelligence", service: "Laptop", priority: "High", submitted: "Today, 13:22", status: "Approved" },
-  { id: "REQ-2025-001249", requestor: "User Name3", unit: "Cyber Ops", service: "Network Access", priority: "High", submitted: "Today, 12:15", status: "Rejected" },
-  { id: "REQ-2025-001250", requestor: "User Name4", unit: "Field Ops", service: "Monitor", priority: "Standard", submitted: "Today, 11:40", status: "Pending" },
-  { id: "REQ-2025-001251", requestor: "User Name5", unit: "Command Center", service: "Desktop Phone", priority: "High", submitted: "Today, 10:05", status: "Approved" },
-  { id: "REQ-2025-001252", requestor: "User Name6", unit: "Security Division", service: "Laptop", priority: "Standard", submitted: "Today, 09:30", status: "Pending" },
-  { id: "REQ-2025-001253", requestor: "User Name7", unit: "Field Ops", service: "Network Access", priority: "High", submitted: "Today, 08:45", status: "Rejected" },
-  { id: "REQ-2025-001254", requestor: "User Name8", unit: "Intelligence", service: "Desktop Phone", priority: "Standard", submitted: "Yesterday, 17:20", status: "Pending" },
-  { id: "REQ-2025-001255", requestor: "User Name9", unit: "Command Center", service: "Monitor", priority: "High", submitted: "Yesterday, 16:10", status: "Approved" },
-  { id: "REQ-2025-001256", requestor: "User Name10", unit: "Cyber Ops", service: "Laptop", priority: "Standard", submitted: "Yesterday, 15:00", status: "Pending" },
-  { id: "REQ-2025-001257", requestor: "User Name11", unit: "Field Ops", service: "Desktop Phone", priority: "High", submitted: "Yesterday, 14:30", status: "Rejected" },
-  { id: "REQ-2025-001258", requestor: "User Name12", unit: "Security Division", service: "Network Access", priority: "Standard", submitted: "Yesterday, 13:15", status: "Pending" },
-  { id: "REQ-2025-001259", requestor: "User Name13", unit: "Intelligence", service: "Monitor", priority: "High", submitted: "Yesterday, 12:00", status: "Approved" },
-  { id: "REQ-2025-001260", requestor: "User Name14", unit: "Command Center", service: "Laptop", priority: "Standard", submitted: "Yesterday, 11:20", status: "Pending" },
-  { id: "REQ-2025-001261", requestor: "User Name15", unit: "Cyber Ops", service: "Desktop Phone", priority: "High", submitted: "Yesterday, 10:45", status: "Rejected" },
-];
+import { useUser } from "@/contexts/UserContext";
 
 export default function ApprovalsInbox() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
+
+  const [tasks, setTasks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // rows per page
-
-  // Get status from URL query param
-  const params = new URLSearchParams(location.search);
-  const statusFilter = params.get("status") || "all"; // "pending", "approved", "rejected", "all"
-
-  // Filtered approvals by status and search query
-  const filteredApprovals = useMemo(() => {
-
-    const stored = JSON.parse(localStorage.getItem("requests")) || [];
-    
-     const localApprovals = stored.map((req) => ({
-    id: req.id || `REQ-${Date.now()}`,
-    requestor: req.requestor_name || "Unknown",
-    unit: req.unit || "N/A",
-    service: req.phone_model || req.serviceType || "Hardware Request",
-    priority: req.priority || "Standard",
-    submitted: new Date(req.submitted_date || Date.now()).toLocaleString("en-US"),
-    status:
-       req.current_status?.charAt(0).toUpperCase() +
-        req.current_status?.slice(1).toLowerCase() || "Pending",
-  }));
+  const [loading, setLoading] = useState(false);
+ 
 
   
-    let approvals = [...localApprovals,...pendingApprovals];
 
+  const itemsPerPage = 6;
 
+  // Get filter from URL (?status=pending)
+  const params = new URLSearchParams(location.search);
+  const statusFilter = params.get("status") || "all"; 
 
-    // Filter by status
+     const { user } = useUser();
+
+  //   const getUserName = () => {
+  //   if (user?.role === "supervisor") return t("supervisor.name");
+  //   if (user?.role === "officer") return t("officer.name");
+  //   if (user?.role === "tech_approver") return t("tech_approver.name");
+  //   return "Unknown User";
+  // };
+     
+  const currentManager = user?.username || "Unknown";
+    
+
+  // ✅ Fetch tasks from backend API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const storedRequests = JSON.parse(localStorage.getItem("requests")) || [];
+      
+        const managerName =
+     currentManager && typeof currentManager === "object"
+    ? (currentManager as { manager: string }).manager
+    : currentManager || "Unknown";
+
+      console.log("✅ Final managerName:", `"${managerName}"`,);
+        const requestBody = {
+          sort: [{ field: "creationDate", order: "ASC" }],
+          filter: {
+            state: "CREATED",
+            localVariables: [
+              {
+                name: "assignee",
+                value: `"${managerName}"`, // must include quotes as string
+              },
+            ],
+          },
+          page: { from: 0, limit: 100 },
+        };
+
+        const response = await fetch("/camunda/v2/user-tasks/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("✅ Tasks fetched:", data);
+
+        const formatted = data.items.map((task) => ({
+          id: task.userTaskKey,
+          requestor: task.processName || "IT Request Workflow",
+          unit: "<default>",
+          service: task.name,
+          priority: task.priority >= 80 ? "High" : "Standard",
+          submitted: new Date(task.creationDate).toLocaleString(),
+          status: task.state === "CREATED" ? "Pending" : task.state,
+          details: task,
+        }));
+
+        setTasks(formatted);
+      } catch (error) {
+        console.error("❌ Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
+  // ✅ Apply filters
+  const filteredApprovals = useMemo(() => {
+    let data = [...tasks];
+
     if (statusFilter !== "all") {
-      const statusCapitalized = statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
-      approvals = approvals.filter((approval) => approval.status === statusCapitalized);
+      const statusCapitalized =
+        statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1);
+      data = data.filter((a) => a.status === statusCapitalized);
     }
 
-    // Filter by search
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      approvals = approvals.filter((approval) => {
-        const searchableText = [
-          approval.id,
-          approval.requestor,
-          approval.unit,
-          approval.service,
-          approval.priority,
-          approval.submitted,
-          approval.status,
-        ].filter(Boolean).join(" ").toLowerCase();
-        return searchableText.includes(query);
-      });
+      const query = searchQuery.toLowerCase();
+      data = data.filter((a) =>
+        [
+          a.id,
+          a.requestor,
+          a.unit,
+          a.service,
+          a.priority,
+          a.submitted,
+          a.status,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(query)
+      );
     }
 
-    return approvals;
-  }, [searchQuery, statusFilter]);
+    return data;
+  }, [tasks, searchQuery, statusFilter]);
 
   const totalPages = Math.ceil(filteredApprovals.length / itemsPerPage);
   const paginatedApprovals = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredApprovals.slice(startIndex, startIndex + itemsPerPage);
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredApprovals.slice(start, start + itemsPerPage);
   }, [filteredApprovals, currentPage]);
 
   useEffect(() => setCurrentPage(1), [searchQuery, statusFilter]);
 
-  const getStatusBadge = (status: string) => {
+  // Badge helper
+  const getStatusBadge = (status) => {
     switch (status) {
       case "Pending":
-        return <Badge className="bg-yellow-300 text-yellow-900 font-open-sans">{status}</Badge>;
-      case "Approved":
-        return <Badge className="bg-green-300 text-green-900 font-open-sans">{status}</Badge>;
+        return (
+          <Badge className="bg-yellow-300 text-yellow-900 font-open-sans">
+            {status}
+          </Badge>
+        );
+      case "Completed":
+        return (
+          <Badge className="bg-green-300 text-green-900 font-open-sans">
+            {status}
+          </Badge>
+        );
       case "Rejected":
-        return <Badge className="bg-red-300 text-red-900 font-open-sans">{status}</Badge>;
+        return (
+          <Badge className="bg-red-300 text-red-900 font-open-sans">
+            {status}
+          </Badge>
+        );
       default:
-        return <Badge className="bg-gray-300 text-gray-900 font-open-sans">{status}</Badge>;
+        return (
+          <Badge className="bg-gray-300 text-gray-900 font-open-sans">
+            {status}
+          </Badge>
+        );
     }
+  };
+
+  const handleReview = (details) => {
+    navigate("/commander/approval-detail", { state: { request: details } });
   };
 
   return (
     <div className="container mx-auto px-6 py-8">
-      {/* <Button variant="ghost" onClick={() => navigate("/commander/dashboard")} className="mb-4">
-        {t("approvalsInbox.backToDashboard")}
-      </Button> */}
-
       <div className="mb-6">
         <h2 className="font-montserrat font-bold text-2xl text-charcoal mb-2">
           {t("approvalsInbox.title")}
@@ -156,48 +222,46 @@ export default function ApprovalsInbox() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.requestId")}</TableHead>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.requestor")}</TableHead>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.unit")}</TableHead>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.service")}</TableHead>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.priority")}</TableHead>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.submitted")}</TableHead>
-              <TableHead className="font-montserrat font-semibold">Status</TableHead>
-              <TableHead className="font-montserrat font-semibold">{t("approvalsInbox.action")}</TableHead>
+              <TableHead>ID</TableHead>
+              <TableHead>Service</TableHead>
+              <TableHead>Priority</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {paginatedApprovals.length === 0 ? (
+            {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground font-open-sans">
-                  {searchQuery ? t("approvalsInbox.noResults") : t("approvalsInbox.noApprovals")}
+                <TableCell colSpan={6} className="text-center py-8">
+                  ⏳ Loading tasks...
+                </TableCell>
+              </TableRow>
+            ) : paginatedApprovals.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  No tasks found.
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedApprovals.map((approval) => (
-                <TableRow key={approval.id} className="hover:bg-muted/50">
-                  <TableCell className="font-montserrat font-semibold text-primary">{approval.id}</TableCell>
-                  <TableCell className="font-open-sans">{approval.requestor}</TableCell>
-                  <TableCell className="font-open-sans">{approval.unit}</TableCell>
-                  <TableCell className="font-open-sans">{approval.service}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={approval.priority === "High" ? "destructive" : "secondary"}
-                      className="font-open-sans"
-                    >
-                      {approval.priority === "High" ? t("common.high") : t("common.standard")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-open-sans text-sm text-muted-foreground">{approval.submitted}</TableCell>
-                  <TableCell>{getStatusBadge(approval.status)}</TableCell>
+              paginatedApprovals.map((task) => (
+                <TableRow key={task.id} className="hover:bg-muted/50">
+                  <TableCell>{task.id}</TableCell>
+                  <TableCell>{task.service}</TableCell>
+                  <TableCell>{task.priority}</TableCell>
+                  <TableCell>{task.submitted}</TableCell>
+                  <TableCell>{getStatusBadge(task.status)}</TableCell>
                   <TableCell>
                     <Button
                       size="sm"
-                      onClick={() => navigate("/commander/approval-detail")}
+                      onClick={() => handleReview(task.details)}
                       className="font-montserrat"
                     >
-                      {t("common.review")}
+                      Review
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -216,45 +280,47 @@ export default function ApprovalsInbox() {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage((prev) => Math.max(1, prev - 1));
+                      setCurrentPage((p) => Math.max(1, p - 1));
                     }}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    className={
+                      currentPage === 1 ? "opacity-50 pointer-events-none" : ""
+                    }
                   />
                 </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(page);
-                      }}
-                      isActive={currentPage === page}
-                      className="cursor-pointer"
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(page);
+                        }}
+                        isActive={page === currentPage}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+
                 <PaginationItem>
                   <PaginationNext
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                      setCurrentPage((p) => Math.min(totalPages, p + 1));
                     }}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    className={
+                      currentPage === totalPages
+                        ? "opacity-50 pointer-events-none"
+                        : ""
+                    }
                   />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
-
-        {/* Showing X of Y */}
-        {filteredApprovals.length > 0 && (
-          <div className="mt-2 text-sm text-muted-foreground font-open-sans text-right">
-            {t("approvalsInbox.showing")} {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredApprovals.length)} {t("approvalsInbox.of")} {filteredApprovals.length}
           </div>
         )}
       </Card>
