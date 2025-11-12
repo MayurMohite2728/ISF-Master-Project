@@ -22,11 +22,21 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { FileText, Clock, CheckCircle, AlertCircle, Search } from "lucide-react";
-import  ApprovalsInbox from '../pages/ApprovalsInbox';
+import  ApprovalsInbox from './ApprovalsInbox';
 
 export default function SupervisorDashboard() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t } = useI18n();  
+
+  const [approvalCounts, setApprovalCounts] = useState({
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  total: 0,
+});
+
+
+
 
   // ---- DASHBOARD CARD SECTION ----
   const [activeCard, setActiveCard] = useState<
@@ -36,25 +46,25 @@ export default function SupervisorDashboard() {
   const cardData = {
     pending: {
       label: t("commander.dashboard.pendingApprovals"),
-      count: 7,
+      count: approvalCounts.pending,
       border: "border-warning",
       icon: <Clock className="w-8 h-8 text-warning" />,
     },
     total: {
       label: t("commander.dashboard.totalRequests"),
-      count: 15,
+      count: approvalCounts.total,
       border: "border-primary",
       icon: <FileText className="w-8 h-8 text-primary" />,
     },
     approved: {
       label: t("commander.dashboard.approvedToday"),
-      count: 4,
+      count: approvalCounts.approved,
       border: "border-success",
       icon: <CheckCircle className="w-8 h-8 text-success" />,
     },
     rejected: {
       label: t("commander.dashboard.rejected"),
-      count: 4,
+      count: approvalCounts.rejected,
       border: "border-destructive",
       icon: <AlertCircle className="w-8 h-8 text-destructive" />,
     },
@@ -86,7 +96,10 @@ export default function SupervisorDashboard() {
   { id: "REQ-2025-001259", requestor: "User Name13", unit: "Intelligence", service: "Monitor", priority: "High", submitted: "Yesterday, 12:00", status: "Approved" },
   { id: "REQ-2025-001260", requestor: "User Name14", unit: "Command Center", service: "Laptop", priority: "Standard", submitted: "Yesterday, 11:20", status: "Pending" },
   { id: "REQ-2025-001261", requestor: "User Name15", unit: "Cyber Ops", service: "Desktop Phone", priority: "High", submitted: "Yesterday, 10:45", status: "Rejected" },
-];
+];  
+
+
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -249,10 +262,8 @@ export default function SupervisorDashboard() {
             </div>
           </div>
         </Card> */}
-         
-
       </div>
-      <ApprovalsInbox/>
+      <ApprovalsInbox onCountUpdate={setApprovalCounts} />
     </div>
   );
 }

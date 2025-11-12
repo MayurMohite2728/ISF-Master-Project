@@ -5,23 +5,52 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/contexts/I18nContext";
-import { CheckCircle, XCircle, Play } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 
 export default function ApprovalDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
 
-  const task = location.state?.request; // 🧩 task details passed from ApprovalsInbox
+  // 🧩 Get the task object passed from ApprovalsInbox
+  const task = location.state?.request;
+
   const [rejectionReason, setRejectionReason] = useState("");
   const [showRejection, setShowRejection] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const manager = JSON.parse(localStorage.getItem("requests"))?.[0]?.managerId || "Jasmine";
-   
+  // Fallback data from localStorage (only used if nothing is passed)
+  const storedRequests = JSON.parse(localStorage.getItem("requests") || "[]");
+  const manager = storedRequests?.[0]?.managerId || "Jasmine";
+  const requestDetails = storedRequests?.[0] || {};
 
-  const requestDetails = JSON.parse(localStorage.getItem("requests"))
-  // ✅ Approve handler
+  if (!task) {
+    return (
+      <div className="container mx-auto px-6 py-8">
+        <Card className="p-6 text-center">
+          <p className="text-muted-foreground">No task details found.</p>
+          <Button className="mt-4" onClick={() => navigate("/commander/approvals")}>
+            Go Back
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // 🧾 Extract dummy or API details
+  const details = task.details || {};
+
+  const {
+    requestedBy,
+    requestType,
+    description,
+    adminDecision,
+    request,
+    managerComments,
+    managerApproved,
+  } = details;
+
+  // ✅ Approve handler (API call retained)
   const handleApprove = async () => {
     if (!task?.userTaskKey) {
       alert("No task key found!");
@@ -61,7 +90,7 @@ export default function ApprovalDetail() {
     }
   };
 
-  // ✅ Reject handler
+  // ✅ Reject handler (API call retained)
   const handleReject = async () => {
     if (!rejectionReason.trim() || !task?.userTaskKey) return;
 
@@ -98,19 +127,6 @@ export default function ApprovalDetail() {
     }
   };
 
-  if (!task) {
-    return (
-      <div className="container mx-auto px-6 py-8">
-        <Card className="p-6 text-center">
-          <p className="text-muted-foreground">No task details found.</p>
-          <Button className="mt-4" onClick={() => navigate("/commander/approvals")}>
-            Go Back
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl">
       <Button
@@ -134,17 +150,13 @@ export default function ApprovalDetail() {
       <Card className="p-8 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
-            <p className="text-xs text-muted-foreground font-open-sans mb-1">
-              Task ID
-            </p>
+            <p className="text-xs text-muted-foreground font-open-sans mb-1">Task ID</p>
             <p className="font-montserrat font-semibold text-xl text-primary">
-              {task.userTaskKey}
+              {task.id || task.userTaskKey}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground font-open-sans mb-1">
-              Process Name
-            </p>
+            <p className="text-xs text-muted-foreground font-open-sans mb-1">Process Name</p>
             <p className="font-montserrat font-semibold text-xl text-charcoal">
               {task.processName || "IT Request Workflow"}
             </p>
@@ -152,41 +164,40 @@ export default function ApprovalDetail() {
         </div>
 
         <div className="border-t pt-6">
-          <h3 className="font-montserrat font-semibold text-lg mb-4">
-            Details
-          </h3>
+          <h3 className="font-montserrat font-semibold text-lg mb-4">Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Requestor Name</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                {requestDetails ?.requestor_name||"Not found"}
+                { details.requestedBy || "Not found"}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Created</p>
+              <p className="text-xs text-muted-foreground mb-1">Request Type</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                {new Date(task.creationDate).toLocaleString()}
+                {requestType || requestDetails.phone_model || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Requested For</p>
-              <p className="font-montserrat font-semibold text-charcoal">
-                {requestDetails.phone_model}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">workstation</p>
-              <p className="font-montserrat font-semibold text-charcoal">
-                {requestDetails.workstation}
-              </p>
-            </div>
-
-             <div>
               <p className="text-xs text-muted-foreground mb-1">Description</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                {requestDetails.justification}
+                {description || requestDetails.justification || "N/A"}
               </p>
             </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Decision Type</p>
+              <p className="font-montserrat font-semibold text-charcoal">
+                {adminDecision || "N/A"}
+              </p>
+            </div>
+            {managerComments && (
+              <div className="md:col-span-2">
+                <p className="text-xs text-muted-foreground mb-1">Manager Comments</p>
+                <p className="font-montserrat font-semibold text-charcoal">
+                  {managerComments}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </Card>

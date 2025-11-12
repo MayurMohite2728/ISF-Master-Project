@@ -22,10 +22,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Search } from "lucide-react";
-
 import { useUser } from "@/contexts/UserContext";
 
-export default function ApprovalsInbox() {
+export default function ApprovalsInbox({ onCountUpdate }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
@@ -34,91 +33,117 @@ export default function ApprovalsInbox() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
- 
-
-  
 
   const itemsPerPage = 6;
-
-  // Get filter from URL (?status=pending)
   const params = new URLSearchParams(location.search);
-  const statusFilter = params.get("status") || "all"; 
+  const statusFilter = params.get("status") || "all";
+  const { user } = useUser();
 
-     const { user } = useUser();
-
-  //   const getUserName = () => {
-  //   if (user?.role === "supervisor") return t("supervisor.name");
-  //   if (user?.role === "officer") return t("officer.name");
-  //   if (user?.role === "tech_approver") return t("tech_approver.name");
-  //   return "Unknown User";
-  // };
-     
   const currentManager = user?.username || "Unknown";
-    
 
-  // ✅ Fetch tasks from backend API
+  // ✅ Use Dummy API Response
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchDummyTasks = async () => {
       setLoading(true);
       try {
-        const storedRequests = JSON.parse(localStorage.getItem("requests")) || [];
-      
-        const managerName =
-     currentManager && typeof currentManager === "object"
-    ? (currentManager as { manager: string }).manager
-    : currentManager || "Unknown";
-
-      console.log("✅ Final managerName:", `"${managerName}"`,);
-        const requestBody = {
-          sort: [{ field: "creationDate", order: "ASC" }],
-          filter: {
-            state: "CREATED",
-            localVariables: [
-              {
-                name: "assignee",
-                value: `"${managerName}"`, // must include quotes as string
-              },
-            ],
-          },
-          page: { from: 0, limit: 100 },
+        const dummyResponse = {
+          items: [
+            {
+              value: '"Nandini"',
+              name: "requestedBy",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"network"',
+              name: "requestType",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"Needs specialized configuration."',
+              name: "adminComments",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"Jasmine"',
+              name: "managerId",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"New IP phone installation"',
+              name: "request",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"technical"',
+              name: "adminDecision",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"Need IP phone setup for a new employee"',
+              name: "description",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: "true",
+              name: "managerApproved",
+              processInstanceKey: "2251799813740297",
+            },
+            {
+              value: '"Approved by Jasmine."',
+              name: "managerComments",
+              processInstanceKey: "2251799813740297",
+            },
+          ],
         };
 
-        const response = await fetch("/camunda/v2/user-tasks/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
-        });
+        // 🔹 Convert array to object for easy access
+        const dataMap = dummyResponse.items.reduce((acc, item) => {
+          acc[item.name] = item.value?.replaceAll('"', "") ?? "N/A";
+          acc.processInstanceKey = item.processInstanceKey; // assign once
+          return acc;
+        }, {});
 
-        if (!response.ok) {
-          throw new Error(`API failed: ${response.status}`);
-        }
+        console.log("Parsed Dummy Data:", dataMap);
 
-        const data = await response.json();
-        console.log("✅ Tasks fetched:", data);
-
-        const formatted = data.items.map((task) => ({
-          id: task.userTaskKey,
-          requestor: task.processName || "IT Request Workflow",
-          unit: "<default>",
-          service: task.name,
-          priority: task.priority >= 80 ? "High" : "Standard",
-          submitted: new Date(task.creationDate).toLocaleString(),
-          status: task.state === "CREATED" ? "Pending" : task.state,
-          details: task,
-        }));
+        // formatted data (
+        const formatted = [
+          {
+            id: dataMap.processInstanceKey,
+            requestor: dataMap.requestedBy || "Unknown",
+            unit: dataMap.requestType || "<default>",
+            service: dataMap.request || "N/A",
+            priority:
+              dataMap.adminDecision === "technical" ? "High" : "Standard",
+            submitted: new Date().toLocaleString(),
+            status:
+              dataMap.managerApproved === "true" ? "Completed" : "Pending",
+            details: dataMap,
+          },
+        ];
 
         setTasks(formatted);
+
+        //  Count statuses and send to parent (Supervisor Dashboard)
+
+        const counts = {
+          pending: formatted.filter((t) => t.status === "Pending").length,
+          approved: formatted.filter((t) => t.status === "Completed").length,
+          rejected: formatted.filter((t) => t.status === "Rejected").length,
+          total: formatted.length,
+        };
+
+        onCountUpdate?.(counts); // safely call parent callback
       } catch (error) {
-        console.error("❌ Error fetching tasks:", error);
+        console.error("❌ Error loading dummy data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTasks();
+    fetchDummyTasks();
   }, []);
 
-  // ✅ Apply filters
+  // ✅ Filtering
   const filteredApprovals = useMemo(() => {
     let data = [...tasks];
 
@@ -158,7 +183,7 @@ export default function ApprovalsInbox() {
 
   useEffect(() => setCurrentPage(1), [searchQuery, statusFilter]);
 
-  // Badge helper
+  // ✅ Badge helper
   const getStatusBadge = (status) => {
     switch (status) {
       case "Pending":
@@ -188,8 +213,8 @@ export default function ApprovalsInbox() {
     }
   };
 
-  const handleReview = (details) => {
-    navigate("/commander/approval-detail", { state: { request: details } });
+  const handleReview = (task) => {
+    navigate("/commander/approval-detail", { state: { request: task } });
   };
 
   return (
@@ -258,7 +283,7 @@ export default function ApprovalsInbox() {
                   <TableCell>
                     <Button
                       size="sm"
-                      onClick={() => handleReview(task.details)}
+                      onClick={() => handleReview(task)}
                       className="font-montserrat"
                     >
                       Review
