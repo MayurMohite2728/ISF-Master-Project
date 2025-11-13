@@ -8,20 +8,13 @@ export default function OfficerDashboard() {
   const navigate = useNavigate();
   const { t } = useI18n();
 
-
-const requests = JSON.parse(localStorage.getItem('requests')) || [];
-
-const approvedCount = requests.filter((req) =>
-  req.current_status?.toLowerCase() == 'approved' || req.status ?.toLowerCase() === "approved"
-).length;
-
-
- const pendingCount = requests.filter((req) =>
-  req.current_status?.toLowerCase() == 'Completed' || req.status ?.toLowerCase() === "Completed"
-).length;
-
-
-const getCount = requests.length;
+  
+const count = JSON.parse(localStorage.getItem('requestCountsOfficer')) ||{
+  total: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0
+};;
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -39,7 +32,7 @@ const getCount = requests.length;
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-foreground font-open-sans mb-1">{t("officer.dashboard.inProgress")}</p>
-                <p className="text-3xl font-montserrat font-bold text-charcoal">{getCount}</p>
+                <p className="text-3xl font-montserrat font-bold text-charcoal">{count.total}</p>
               </div>
               <Phone className="w-8 h-8 text-primary" />
             </div>
@@ -49,7 +42,7 @@ const getCount = requests.length;
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-foreground font-open-sans mb-1">{t("officer.dashboard.awaitingApproval")}</p>
-                <p className="text-3xl font-montserrat font-bold text-charcoal">{approvedCount}</p>
+                <p className="text-3xl font-montserrat font-bold text-charcoal">{count.approved}</p>
               </div>
               <Clock className="w-8 h-8 text-warning" />
             </div>
@@ -59,7 +52,7 @@ const getCount = requests.length;
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-foreground font-open-sans mb-1">{t("officer.dashboard.completedThisWeek")}</p>
-                <p className="text-3xl font-montserrat font-bold text-charcoal">{pendingCount}</p>
+                <p className="text-3xl font-montserrat font-bold text-charcoal">{count.pending}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-success" />
             </div>

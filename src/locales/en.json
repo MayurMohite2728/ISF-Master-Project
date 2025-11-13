@@ -77,7 +77,7 @@
       "title": "My Requests Dashboard",
       "subtitle": "Internal Security Division – Field Ops",
       "totalRequests": "Total Requests",
-      "inProgress": "In Progress",
+      "inProgress": "Pending",
       "awaitingApproval": "Completed",
       "completedThisWeek": "Completed This Week",
       "slaBreaches": "SLA Breaches",

@@ -1,4 +1,3 @@
-// RequestStatus.jsx
 import { useState, useMemo, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { StatusTracker } from "@/components/StatusTracker";
 import { useI18n } from "@/contexts/I18nContext";
 import { useUser } from "@/contexts/UserContext";
+// import { useApproval } from "@/contexts/ApprovalContext";
 import {
   Table,
   TableBody,
@@ -18,75 +18,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 
-// ------------------ DUMMY APIs ------------------
-
-//  Dummy API1: Get all processInstanceKeys
-const dummyApi1 = async () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        items: [
-          {
-            processInstanceKey: "2251799813763634",
-            startDate: "2025-11-12T13:47:37.903Z",
-          },
-          {
-            processInstanceKey: "2251799813763788",
-            startDate: "2025-11-10T10:11:22.000Z",
-          },
-          {
-            processInstanceKey: "2251799813763799",
-            startDate: "2025-11-09T09:45:00.000Z",
-          },
-        ],
-      });
-    }, 400);
-  });
-};
-
-// 🟢 Dummy API2: Variables for each processInstanceKey
-const dummyApi2 = async (processInstanceKey) => {
-  const allData = {
-    2251799813763634: {
-      items: [
-        { name: "requestedBy", value: '"Nandini"' },
-        { name: "requestType", value: '"network"' },
-        { name: "request", value: '"New IP phone installation"' },
-        { name: "description", value: '"Need IP phone setup"' },
-        { name: "status", value: '"Submitted"' },
-      ],
-    },
-    2251799813763788: {
-      items: [
-        { name: "requestedBy", value: '"Jasmine"' },
-        { name: "requestType", value: '"hardware"' },
-        { name: "request", value: '"Laptop Request"' },
-        { name: "description", value: '"Laptop required for field ops"' },
-        { name: "status", value: '"Approved"' },
-      ],
-    },
-    2251799813763799: {
-      items: [
-        { name: "requestedBy", value: '"Nandini"' },
-        { name: "requestType", value: '"network"' },
-        { name: "request", value: '"Network Access"' },
-        { name: "description", value: '"Need access to secure VLAN"' },
-        { name: "status", value: '"Rejected"' },
-      ],
-    },
-  };
-
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(allData[processInstanceKey]), 400)
-  );
-};
-
-// ------------------------------------------------
-
 export default function RequestStatus() {
   const navigate = useNavigate();
   const { t } = useI18n();
   const { user } = useUser();
+  // const { setTasks } = useApproval();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [requests, setRequests] = useState([]);
@@ -100,59 +36,88 @@ export default function RequestStatus() {
     return "/officer/dashboard";
   };
 
-  // 🧩 Fetch: API1 → API2 → Merge → Filter by user
+  // ⭐ MAIN FETCH LOGIC (REAL APIs)
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        // 1️⃣ Call API1 (dummy)
+        // -----------------------------
+        // 1️⃣ Fetch Process Instances
+        // -----------------------------
+        const getProcessInstance = await fetch(
+          "https://mp0089b2cfab2685a6c9.free.beeceptor.com/v2/process-instances/search",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              filter: {
+                processDefinitionId: "it_request_workflow",
+                processDefinitionVersionTag: "final",
+              },
+            }),
+          }
+        );
 
-        //    const getProcessInstances = await fetch("/v2/process-instances/search", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({
-        //     filter: {
-        //       processDefinitionId: "it_request_workflow",
-        //       processDefinitionVersionTag: "final",
-        //     },
-        //   }),
-        // }).then(res => res.json());
+        const api1Json = await getProcessInstance.json(); // ✔ Correct
+        const instances = api1Json.items || [];
 
-        const api1 = await dummyApi1();
+        const merged = await Promise.all(
+          instances.map(async (inst) => {
+            const api2 = await fetch(
+              "https://mp0089b2cfab2685a6c9.free.beeceptor.com/v2/variables/search",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  filter: { processInstanceKey: inst.processInstanceKey },
+                }),
+              }
+            );
 
-        // 2️⃣ For each processInstanceKey, call API2
-        const combined = await Promise.all(
-          api1.items.map(async (inst) => {
-            const api2 = await dummyApi2(inst.processInstanceKey);
+            const api2Json = await api2.json(); // ✔ Correct
 
-            // Convert API2 array into object
-            const details = api2.items.reduce((acc, item) => {
+            const details = (api2Json.items || []).reduce((acc, item) => {
               acc[item.name] = item.value?.replaceAll('"', "");
               return acc;
             }, {});
 
-            // Build final row
             return {
               id: inst.processInstanceKey,
               requestorName: details.requestedBy,
+              requestType: details.requestType,
               request: details.request,
-              status: details.status?.toLowerCase() || "submitted",
               description: details.description,
-              badgeNumber: "ISF-064821",
+              status: (details.status || "submitted").toLowerCase(),
               submittedDate: inst.startDate,
+              badgeNumber: "ISF-064821",
             };
           })
         );
 
-        // 3️⃣ Filter only current user's records
-        const currentUserName =
-          user?.name || user?.username || user?.fullName || "";
+        const currentName =
+          user?.name?.toLowerCase() ||
+          user?.username?.toLowerCase() ||
+          user?.fullName?.toLowerCase() ||
+          "";
 
-        const filtered = combined.filter(
+        const filtered = merged.filter(
           (r) =>
-            r.requestorName?.toLowerCase() === currentUserName?.toLowerCase()
+            r.requestorName && r.requestorName.toLowerCase() === currentName
         );
 
         setRequests(filtered);
+
+        // 4️⃣ Count status for dashboard
+        const counts = {
+          total: filtered.length,
+          pending: filtered.filter(
+            (r) => r.status === "submitted" || r.status === "pending"
+          ).length,
+          approved: filtered.filter((r) => r.status === "approved").length,
+          rejected: filtered.filter((r) => r.status === "rejected").length,
+        };
+
+        // 5️⃣ Save in localStorage
+        localStorage.setItem("requestCountsOfficer", JSON.stringify(counts));
       } catch (error) {
         console.error("❌ Error loading requests:", error);
       }
@@ -161,7 +126,7 @@ export default function RequestStatus() {
     if (user) fetchRequests();
   }, [user]);
 
-  // 🔄 Expand Row Handler
+  // Expand row
   const toggleRow = (id) => {
     setExpandedRows((prev) => {
       const newSet = new Set(prev);
@@ -170,7 +135,7 @@ export default function RequestStatus() {
     });
   };
 
-  // 🟢 Status Badge Renderer
+  // Status badge
   const getStatusBadge = (status) => {
     switch (status) {
       case "submitted":
@@ -184,36 +149,28 @@ export default function RequestStatus() {
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
 
-  // 🔍 Search
+  // Search
   const filteredRequests = useMemo(() => {
     if (!searchQuery.trim()) return requests;
-    const query = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase();
     return requests.filter((r) =>
-      [r.id, r.requestorName, r.status, r.badgeNumber]
-        .join(" ")
-        .toLowerCase()
-        .includes(query)
+      [r.id, r.requestorName, r.status].join(" ").toLowerCase().includes(q)
     );
   }, [searchQuery, requests]);
 
-  // 📄 Pagination
-  const paginatedRequests = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredRequests.slice(startIndex, startIndex + itemsPerPage);
+  // Pagination
+  const paginated = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredRequests.slice(start, start + itemsPerPage);
   }, [filteredRequests, currentPage]);
 
-  useEffect(() => setCurrentPage(1), [searchQuery]);
-
-  // -------------------- UI RENDER --------------------
   return (
     <div className="container mx-auto px-6 py-8">
       <Button
@@ -225,7 +182,7 @@ export default function RequestStatus() {
       </Button>
 
       <div className="mb-6">
-        <h2 className="font-montserrat font-bold text-3xl text-primary mb-2">
+        <h2 className="font-montserrat font-bold text-3xl text-primary">
           Request Status
         </h2>
         <p className="text-muted-foreground">
@@ -239,8 +196,7 @@ export default function RequestStatus() {
           <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              type="text"
-              placeholder="Search by ID, requestor, or status"
+              placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -248,11 +204,10 @@ export default function RequestStatus() {
           </div>
         </div>
 
-        {/* Table */}
         <Table className="font-montserrat">
           <TableHeader>
             <TableRow>
-              <TableHead>Request ID</TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>Requestor</TableHead>
               <TableHead>Badge</TableHead>
               <TableHead>Status</TableHead>
@@ -262,16 +217,16 @@ export default function RequestStatus() {
           </TableHeader>
 
           <TableBody>
-            {paginatedRequests.length === 0 ? (
+            {paginated.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8">
-                  No matching requests.
+                  No matching records
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedRequests.map((r) => (
+              paginated.map((r) => (
                 <Fragment key={r.id}>
-                  <TableRow className="hover:bg-muted/50">
+                  <TableRow>
                     <TableCell>{r.id}</TableCell>
                     <TableCell>{r.requestorName}</TableCell>
                     <TableCell>{r.badgeNumber}</TableCell>
@@ -282,7 +237,6 @@ export default function RequestStatus() {
                         size="sm"
                         variant="outline"
                         onClick={() => toggleRow(r.id)}
-                        className="font-semibold"
                       >
                         {expandedRows.has(r.id)
                           ? "Hide Details"
@@ -291,18 +245,18 @@ export default function RequestStatus() {
                     </TableCell>
                   </TableRow>
 
-                  {/* Expandable Row */}
+                  {/* Expanded details */}
                   <TableRow>
                     <TableCell colSpan={6}>
                       <div
-                        className={`overflow-hidden transition-all duration-300 bg-gray-50 rounded-md ${
+                        className={`transition-all ${
                           expandedRows.has(r.id)
                             ? "max-h-[300px] p-4"
-                            : "max-h-0 p-0"
+                            : "max-h-0 p-0 overflow-hidden"
                         }`}
                       >
                         {expandedRows.has(r.id) && (
-                          <>
+                          <div>
                             <p>
                               <strong>Request:</strong> {r.request}
                             </p>
@@ -310,34 +264,24 @@ export default function RequestStatus() {
                               <strong>Description:</strong> {r.description}
                             </p>
 
-                            {/* Status Timeline */}
-                            <div className="mt-3">
-                              <StatusTracker
-                                steps={[
-                                  {
-                                    label: "Submitted",
-                                    details: r.request,
-                                  },
-                                  {
-                                    label: "Processing",
-                                  },
-                                  {
-                                    label: "Completed",
-                                  },
-                                ]}
-                                overallStatus={r.status}
-                                currentStepIndex={
-                                  r.status === "submitted"
-                                    ? 0
-                                    : r.status === "approved"
-                                    ? 2
-                                    : r.status === "rejected"
-                                    ? 1
-                                    : 0
-                                }
-                              />
-                            </div>
-                          </>
+                            <StatusTracker
+                              steps={[
+                                { label: "Submitted", details: r.request },
+                                { label: "Processing" },
+                                { label: "Completed" },
+                              ]}
+                              overallStatus={r.status}
+                              currentStepIndex={
+                                r.status === "submitted"
+                                  ? 0
+                                  : r.status === "approved"
+                                  ? 2
+                                  : r.status === "rejected"
+                                  ? 1
+                                  : 0
+                              }
+                            />
+                          </div>
                         )}
                       </div>
                     </TableCell>

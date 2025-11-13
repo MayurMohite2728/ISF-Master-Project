@@ -24,6 +24,10 @@ export default function ApprovalDetail() {
   const manager = storedRequests?.[0]?.managerId || "Jasmine";
   const requestDetails = storedRequests?.[0] || {};
 
+   
+
+
+
   if (!task) {
     return (
       <div className="container mx-auto px-6 py-8">
@@ -169,25 +173,25 @@ export default function ApprovalDetail() {
             <div>
               <p className="text-xs text-muted-foreground mb-1">Requestor Name</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                { details.requestedBy || "Not found"}
+                { task.requestedBy || "Not found"}
               </p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-1">Request Type</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                {requestType || requestDetails.phone_model || "N/A"}
+                {task.service || "N/A"}
               </p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-1">Description</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                {description || requestDetails.justification || "N/A"}
+                {task.description  || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Decision Type</p>
+              <p className="text-xs text-muted-foreground mb-1">Submitted Date</p>
               <p className="font-montserrat font-semibold text-charcoal">
-                {adminDecision || "N/A"}
+                {task.submitted || "N/A"}
               </p>
             </div>
             {managerComments && (

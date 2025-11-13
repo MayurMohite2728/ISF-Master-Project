@@ -5,9 +5,11 @@ import { Card } from "@/components/ui/card";
 import { useI18n } from "@/contexts/I18nContext";
 import { FileText, Clock, CheckCircle, AlertCircle } from "lucide-react";
 
-export default function CommanderDashboard() {
+export default function CommanderDashboard( ) {
   const navigate = useNavigate();
   const { t } = useI18n();
+
+  const count = JSON.parse(localStorage.get())
 
   // Active card state; default is "pending"
   const [activeCard, setActiveCard] = useState<"pending" | "total" | "approved" | "rejected">("pending");
