@@ -18,42 +18,70 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 
-// ---------------- MOCK API RESPONSE ----------------
-const mockApiResponse = {
-  items: [
-    {
-      id: 1,
-      requestor_name: "Nandini",
-      current_status: "SUBMITTED",
-      badge_number: "ISF-4410",
-      submitted_date: "2025-11-05T13:50:00Z",
-    },
-    {
-      id: 2,
-      requestor_name: "Sara Khan",
-      current_status: "IN_PROGRESS",
-      badge_number: "ISF-4411",
-      submitted_date: "2025-11-07T10:20:00Z",
-    },
-    {
-      id: 3,
-      requestor_name: "John Doe",
-      current_status: "APPROVED",
-      badge_number: "ISF-4412",
-      submitted_date: "2025-11-02T09:15:00Z",
-    },
-    {
-      id: 4,
-      requestor_name: "Jane Smith",
-      current_status: "REJECTED",
-      badge_number: "ISF-4413",
-      submitted_date: "2025-10-30T08:40:00Z",
-    },
-  ],
-  page: 1,
-  page_size: 20,
-  total: 4,
+// ------------------ DUMMY APIs ------------------
+
+//  Dummy API1: Get all processInstanceKeys
+const dummyApi1 = async () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        items: [
+          {
+            processInstanceKey: "2251799813763634",
+            startDate: "2025-11-12T13:47:37.903Z",
+          },
+          {
+            processInstanceKey: "2251799813763788",
+            startDate: "2025-11-10T10:11:22.000Z",
+          },
+          {
+            processInstanceKey: "2251799813763799",
+            startDate: "2025-11-09T09:45:00.000Z",
+          },
+        ],
+      });
+    }, 400);
+  });
 };
+
+// 🟢 Dummy API2: Variables for each processInstanceKey
+const dummyApi2 = async (processInstanceKey) => {
+  const allData = {
+    2251799813763634: {
+      items: [
+        { name: "requestedBy", value: '"Nandini"' },
+        { name: "requestType", value: '"network"' },
+        { name: "request", value: '"New IP phone installation"' },
+        { name: "description", value: '"Need IP phone setup"' },
+        { name: "status", value: '"Submitted"' },
+      ],
+    },
+    2251799813763788: {
+      items: [
+        { name: "requestedBy", value: '"Jasmine"' },
+        { name: "requestType", value: '"hardware"' },
+        { name: "request", value: '"Laptop Request"' },
+        { name: "description", value: '"Laptop required for field ops"' },
+        { name: "status", value: '"Approved"' },
+      ],
+    },
+    2251799813763799: {
+      items: [
+        { name: "requestedBy", value: '"Nandini"' },
+        { name: "requestType", value: '"network"' },
+        { name: "request", value: '"Network Access"' },
+        { name: "description", value: '"Need access to secure VLAN"' },
+        { name: "status", value: '"Rejected"' },
+      ],
+    },
+  };
+
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(allData[processInstanceKey]), 400)
+  );
+};
+
+// ------------------------------------------------
 
 export default function RequestStatus() {
   const navigate = useNavigate();
@@ -72,96 +100,87 @@ export default function RequestStatus() {
     return "/officer/dashboard";
   };
 
+  // 🧩 Fetch: API1 → API2 → Merge → Filter by user
   useEffect(() => {
     const fetchRequests = async () => {
-      // 1️⃣ Simulate API data
-      const apiData = mockApiResponse.items.map((item) => ({
-        id: item.id.toString(),
-        requestorName: item.requestor_name,
-        status: item.current_status.toLowerCase(),
-        badgeNumber: item.badge_number,
-        submittedDate: item.submitted_date,
-      }));
+      try {
+        // 1️⃣ Call API1 (dummy)
 
-      // 2️⃣ Get locally stored requests
-      const localData =
-        JSON.parse(localStorage.getItem("requests"))?.map((item) => ({
-          id: item.id.toString(),
-          requestorName: item.requestor_name,
-          status: item.current_status.toLowerCase(),
-          badgeNumber: item.badge_number,
-          submittedDate: item.submitted_date,
-        })) || [];
+        //    const getProcessInstances = await fetch("/v2/process-instances/search", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({
+        //     filter: {
+        //       processDefinitionId: "it_request_workflow",
+        //       processDefinitionVersionTag: "final",
+        //     },
+        //   }),
+        // }).then(res => res.json());
 
-      // 3️⃣ Merge all requests
-      const allRequests = [...localData, ...apiData];
+        const api1 = await dummyApi1();
 
-      // 4️⃣ Filter only requests from current logged-in user
-      const currentUserName =
-        user?.name || user?.username || user?.fullName || "";
-      const userRequests = allRequests.filter(
-        (r) => r.requestorName?.toLowerCase() === currentUserName?.toLowerCase()
-      );
+        // 2️⃣ For each processInstanceKey, call API2
+        const combined = await Promise.all(
+          api1.items.map(async (inst) => {
+            const api2 = await dummyApi2(inst.processInstanceKey);
 
-      // 5️⃣ Update state
-      setRequests(userRequests);
+            // Convert API2 array into object
+            const details = api2.items.reduce((acc, item) => {
+              acc[item.name] = item.value?.replaceAll('"', "");
+              return acc;
+            }, {});
+
+            // Build final row
+            return {
+              id: inst.processInstanceKey,
+              requestorName: details.requestedBy,
+              request: details.request,
+              status: details.status?.toLowerCase() || "submitted",
+              description: details.description,
+              badgeNumber: "ISF-064821",
+              submittedDate: inst.startDate,
+            };
+          })
+        );
+
+        // 3️⃣ Filter only current user's records
+        const currentUserName =
+          user?.name || user?.username || user?.fullName || "";
+
+        const filtered = combined.filter(
+          (r) =>
+            r.requestorName?.toLowerCase() === currentUserName?.toLowerCase()
+        );
+
+        setRequests(filtered);
+      } catch (error) {
+        console.error("❌ Error loading requests:", error);
+      }
     };
 
     if (user) fetchRequests();
   }, [user]);
 
+  // 🔄 Expand Row Handler
   const toggleRow = (id) => {
     setExpandedRows((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
       return newSet;
     });
   };
 
+  // 🟢 Status Badge Renderer
   const getStatusBadge = (status) => {
     switch (status) {
       case "submitted":
-        return (
-          <Badge variant="outline">
-            {t("requestStatus.statusPending") || "Submitted"}
-          </Badge>
-        );
-      case "in_progress":
-        return (
-          <Badge
-            variant="default"
-            className="bg-warning text-warning-foreground"
-          >
-            {t("requestStatus.inProgress") || "In Progress"}
-          </Badge>
-        );
+        return <Badge variant="outline">Submitted</Badge>;
       case "approved":
-        return (
-          <Badge
-            variant="default"
-            className="bg-success text-success-foreground"
-          >
-            {t("requestStatus.statusApproved") || "Approved"}
-          </Badge>
-        );
-      case "completed":
-        return (
-          <Badge
-            variant="default"
-            className="bg-success text-success-foreground"
-          >
-            {t("requestStatus.statusCompleted") || "Completed"}
-          </Badge>
-        );
+        return <Badge className="bg-success text-white">Approved</Badge>;
       case "rejected":
-        return (
-          <Badge variant="destructive">
-            {t("requestStatus.statusRejected") || "Rejected"}
-          </Badge>
-        );
+        return <Badge className="bg-destructive text-white">Rejected</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge>{status}</Badge>;
     }
   };
 
@@ -174,9 +193,10 @@ export default function RequestStatus() {
     });
   };
 
+  // 🔍 Search
   const filteredRequests = useMemo(() => {
     if (!searchQuery.trim()) return requests;
-    const query = searchQuery.toLowerCase().trim();
+    const query = searchQuery.toLowerCase();
     return requests.filter((r) =>
       [r.id, r.requestorName, r.status, r.badgeNumber]
         .join(" ")
@@ -185,15 +205,15 @@ export default function RequestStatus() {
     );
   }, [searchQuery, requests]);
 
+  // 📄 Pagination
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredRequests.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredRequests, currentPage]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
+  useEffect(() => setCurrentPage(1), [searchQuery]);
 
+  // -------------------- UI RENDER --------------------
   return (
     <div className="container mx-auto px-6 py-8">
       <Button
@@ -201,29 +221,26 @@ export default function RequestStatus() {
         onClick={() => navigate(getDashboardRoute())}
         className="mb-4"
       >
-        {t("requestStatus.backToDashboard") || "Back to Dashboard"}
+        Back to Dashboard
       </Button>
 
       <div className="mb-6">
         <h2 className="font-montserrat font-bold text-3xl text-primary mb-2">
-          {t("requestStatus.title") || "Request Status"}
+          Request Status
         </h2>
         <p className="text-muted-foreground">
-          {t("requestStatus.subtitle") ||
-            "Track the current progress of your submitted requests."}
+          View all requests you have submitted.
         </p>
       </div>
 
       <Card className="p-6">
+        {/* Search Bar */}
         <div className="mb-4 flex justify-end">
           <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder={
-                t("requestStatus.searchPlaceholder") ||
-                "Search by ID, name, or badge"
-              }
+              placeholder="Search by ID, requestor, or status"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -231,54 +248,41 @@ export default function RequestStatus() {
           </div>
         </div>
 
+        {/* Table */}
         <Table className="font-montserrat">
           <TableHeader>
             <TableRow>
-              <TableHead className="text-charcol font-bold">
-                Request ID
-              </TableHead>
-              <TableHead className="text-charcol font-bold">
-                Requestor
-              </TableHead>
-              <TableHead className="text-charcol font-bold">
-                Badge Number
-              </TableHead>
-              <TableHead className="text-charcol font-bold">Status</TableHead>
-              <TableHead className="text-charcol font-bold">
-                Submitted Date
-              </TableHead>
-              <TableHead className="text-charcol font-bold">Action</TableHead>
+              <TableHead>Request ID</TableHead>
+              <TableHead>Requestor</TableHead>
+              <TableHead>Badge</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Submitted</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {paginatedRequests.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-8 text-foreground"
-                >
-                  {t("requestStatus.noResults") || "No requests found."}
+                <TableCell colSpan={6} className="text-center py-8">
+                  No matching requests.
                 </TableCell>
               </TableRow>
             ) : (
               paginatedRequests.map((r) => (
                 <Fragment key={r.id}>
                   <TableRow className="hover:bg-muted/50">
-                    <TableCell className="text-primary font-semibold">
-                      {r.id}
-                    </TableCell>
+                    <TableCell>{r.id}</TableCell>
                     <TableCell>{r.requestorName}</TableCell>
                     <TableCell>{r.badgeNumber}</TableCell>
                     <TableCell>{getStatusBadge(r.status)}</TableCell>
-                    <TableCell className="text-sm text-foreground">
-                      {formatDate(r.submittedDate)}
-                    </TableCell>
+                    <TableCell>{formatDate(r.submittedDate)}</TableCell>
                     <TableCell>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => toggleRow(r.id)}
-                        className="bg-accent text-charcoal font-semibold"
+                        className="font-semibold"
                       >
                         {expandedRows.has(r.id)
                           ? "Hide Details"
@@ -287,84 +291,53 @@ export default function RequestStatus() {
                     </TableCell>
                   </TableRow>
 
-                  {/* Collapsible Details */}
+                  {/* Expandable Row */}
                   <TableRow>
-                    <TableCell colSpan={6} className="p-0 border-none">
+                    <TableCell colSpan={6}>
                       <div
-                        className={`overflow-hidden transition-all duration-500 ease-in-out bg-gray-50 rounded-lg ${
+                        className={`overflow-hidden transition-all duration-300 bg-gray-50 rounded-md ${
                           expandedRows.has(r.id)
-                            ? "max-h-[500px] p-4 opacity-100"
-                            : "max-h-0 p-0 opacity-0"
+                            ? "max-h-[300px] p-4"
+                            : "max-h-0 p-0"
                         }`}
                       >
                         {expandedRows.has(r.id) && (
-                          <div className="space-y-2">
+                          <>
                             <p>
-                              <strong>Requestor:</strong> {r.requestorName}
+                              <strong>Request:</strong> {r.request}
                             </p>
                             <p>
-                              <strong>Badge:</strong> {r.badgeNumber}
+                              <strong>Description:</strong> {r.description}
                             </p>
 
-                            <div className="mt-2">
-                              {(() => {
-                                const workflowSteps = [
+                            {/* Status Timeline */}
+                            <div className="mt-3">
+                              <StatusTracker
+                                steps={[
                                   {
-                                    label: "Commander Approval",
-                                    details: "Commander Verified",
-                                    timestamp: "15:04",
+                                    label: "Submitted",
+                                    details: r.request,
                                   },
                                   {
-                                    label: "Ticket Creation",
-                                    details: "INC-2025-004216",
-                                    timestamp: "15:07",
+                                    label: "Processing",
                                   },
                                   {
-                                    label: "Asset Allocation",
-                                    details: "WH-ORD-31872",
-                                    timestamp: "15:10",
+                                    label: "Completed",
                                   },
-                                  {
-                                    label: "Provisioning",
-                                    details: "EXT-44129 Assigned",
-                                    timestamp: "15:18",
-                                  },
-                                ];
-
-                                let overallStatus = "pending";
-                                let currentStepIndex = -1;
-                                let rejectedStepIndex = -1;
-
-                                switch (r.status) {
-                                  case "approved":
-                                  case "completed":
-                                    overallStatus = "approved";
-                                    currentStepIndex = workflowSteps.length - 1;
-                                    break;
-                                  case "rejected":
-                                    overallStatus = "rejected";
-                                    rejectedStepIndex = 2;
-                                    break;
-                                  case "in_progress":
-                                  case "submitted":
-                                    overallStatus = "pending";
-                                    currentStepIndex = 1;
-                                    break;
-                                  default:
-                                    overallStatus = "pending";
+                                ]}
+                                overallStatus={r.status}
+                                currentStepIndex={
+                                  r.status === "submitted"
+                                    ? 0
+                                    : r.status === "approved"
+                                    ? 2
+                                    : r.status === "rejected"
+                                    ? 1
+                                    : 0
                                 }
-
-                                return (
-                                  <StatusTracker
-                                    steps={workflowSteps}
-                                    overallStatus={overallStatus}
-                                    currentStepIndex={currentStepIndex}
-                                    rejectedStepIndex={rejectedStepIndex}
-                                  />
-                                );
-                              })()}
+                              />
                             </div>
-                          </div>
+                          </>
                         )}
                       </div>
                     </TableCell>
