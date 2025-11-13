@@ -35,9 +35,6 @@ export default function SupervisorDashboard() {
   total: 0,
 });
 
-
-
-
   // ---- DASHBOARD CARD SECTION ----
   const [activeCard, setActiveCard] = useState<
     "pending" | "total" | "approved" | "rejected"

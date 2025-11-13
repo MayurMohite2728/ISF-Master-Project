@@ -44,16 +44,16 @@ export default function RequestStatus() {
         // 1️⃣ Fetch Process Instances
         // -----------------------------
         const getProcessInstance = await fetch(
-          "https://mp0089b2cfab2685a6c9.free.beeceptor.com/v2/process-instances/search",
+          "https://mocki.io/v1/fda0ef79-0f80-4734-b61b-2f49f5f9e876",
           {
-            method: "POST",
+            method: "GET",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              filter: {
-                processDefinitionId: "it_request_workflow",
-                processDefinitionVersionTag: "final",
-              },
-            }),
+            // body: JSON.stringify({
+            //   filter: {
+            //     processDefinitionId: "it_request_workflow",
+            //     processDefinitionVersionTag: "final",
+            //   },
+            // }),
           }
         );
 
@@ -73,7 +73,7 @@ export default function RequestStatus() {
               }
             );
 
-            const api2Json = await api2.json(); // ✔ Correct
+            const api2Json = await api2.json();
 
             const details = (api2Json.items || []).reduce((acc, item) => {
               acc[item.name] = item.value?.replaceAll('"', "");
